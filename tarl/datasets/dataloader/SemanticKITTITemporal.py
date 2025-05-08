@@ -7,6 +7,7 @@ import os
 import numpy as np
 
 import warnings
+import random
 
 warnings.filterwarnings('ignore')
 
@@ -30,6 +31,7 @@ class TemporalKITTISet(Dataset):
         # and the next batch starts at the middle
         # e.g.: [0,1,2,3,4,5,6,7,8] pairs in sampled between [0,1,2] and [6,7,8] and the next sample starts in 3 (i.e. scan_window = [3,4,5,6,7,8,9,10,11])
         self.sampling_window = int(np.floor(scan_window / 3))
+        self.percentage = percentage
 
         self.split = split
         self.seqs = seqs
@@ -54,6 +56,11 @@ class TemporalKITTISet(Dataset):
                 self.points_datapath.append([os.path.join(point_seq_path, point_file) for point_file in point_seq_bin[file_num:end_file] ])
                 if end_file == len(point_seq_bin):
                     break
+            
+        if self.percentage < 1.0:
+            ds_len = np.int(len(self.points_datapath) * self.percentage)
+            self.points_datapath = random.sample(self.points_datapath, ds_len)
+            print(f"!!!!!!!!! YOU ARE USING ONLY {self.percentage} OF THE DATA !!!!!!!!!!!!")
 
         #self.points_datapath = self.points_datapath[:10]
 

@@ -1,6 +1,6 @@
 experiment:
     id: TARL
-    offline: True
+    offline: False
 
 ##Data
 data:
@@ -11,7 +11,7 @@ data:
     validation: [ '08' ]
     test: ['11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']
     intensity: True
-    percentage: '1.0'
+    percentage: 0.25
     use_ground_pred: True
 
 ##Training

@@ -71,7 +71,10 @@ def main(config,weights,checkpoint):
                                     entity='viu3d',
                                     name=cfg['experiment']['id'],
                                     project='dino3d',
+                                    offline=cfg['experiment']['offline'],
                                     )
+    
+    log_every_steps = np.int32(100 * cfg['data']['percentage'])
     #Setup trainer
     trainer = Trainer(
         accelerator="gpu",
@@ -80,7 +83,7 @@ def main(config,weights,checkpoint):
         replace_sampler_ddp=False,
         # sync_batchnorm=True,    # We have batch norm in the model
         logger=logger,
-        log_every_n_steps=100,
+        log_every_n_steps=log_every_steps,
         max_epochs=cfg['train']['max_epoch'],
         callbacks=[lr_monitor, checkpoint_saver],
         resume_from_checkpoint=checkpoint,
