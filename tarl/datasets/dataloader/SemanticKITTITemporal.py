@@ -15,10 +15,11 @@ warnings.filterwarnings('ignore')
 #################################################
 
 class TemporalKITTISet(Dataset):
-    def __init__(self, data_dir, scan_window, seqs, split, resolution, percentage, intensity_channel, use_ground_pred=True, num_points=80000):
+    def __init__(self, data_dir, scan_window, seqs, split, resolution, percentage, intensity_channel, use_ground_pred=True, 
+                 num_points=80000, augmented_dir='segments_views'):
         super().__init__()
         self.data_dir = data_dir
-        self.augmented_dir = 'segments_views'
+        self.augmented_dir = augmented_dir
 
         self.n_clusters = 50
         self.resolution = resolution
@@ -93,6 +94,8 @@ class TemporalKITTISet(Dataset):
             segments = np.fromfile(os.path.join(cluster_path, fname + '.seg'), dtype=np.float16)
             segments = segments.reshape((-1, 1))
         else:
+            print("not found")
+            raise FileNotFoundError(f"Missing: {os.path.join(cluster_path, fname + '.seg')}")
             points_set, ground_label, parse_idx = aggregate_pcds(self.points_datapath[index], self.data_dir, self.use_ground_pred)
             segments = clusterize_pcd(points_set, ground_label)
             segments[parse_idx] = -np.inf

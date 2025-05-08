@@ -115,6 +115,10 @@ class TARLTrainer(LightningModule):
 
         return loss
 
+    def on_train_epoch_start(self):
+        if hasattr(self.trainer.datamodule, "train_sampler"):
+            self.trainer.datamodule.train_sampler.set_epoch(self.current_epoch)
+
     def training_step(self, batch:dict, batch_idx):
         torch.cuda.empty_cache()
 
