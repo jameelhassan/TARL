@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 import tarl.datasets.datasets as datasets
-import tarl.models.models as models
+import tarl.models.models_ddp as models
 from pytorch_lightning.plugins import DDPPlugin
 
 # set seeds

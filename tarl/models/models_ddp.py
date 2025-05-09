@@ -20,9 +20,11 @@ class TARLTrainer(LightningModule):
         self.save_hyperparameters(cfg)
         self.data_module = data_module
 
-        self.model_q = minknet.MinkUNet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'])
+        model_q = minknet.MinkUNet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'])
+        self.model_q = ME.MinkowskiSyncBatchNorm.convert_sync_batchnorm(model_q)
         self.proj_head_q = TransformerProjector(d_model=self.hparams['model']['out_dim'], num_layer=1)
-        self.model_k = minknet.MinkUNet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'])
+        model_k = minknet.MinkUNet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'])
+        self.model_k = ME.MinkowskiSyncBatchNorm.convert_sync_batchnorm(model_k)
         self.proj_head_k = TransformerProjector(d_model=self.hparams['model']['out_dim'], num_layer=1)
 
         # initialize model k and q

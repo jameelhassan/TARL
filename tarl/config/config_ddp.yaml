@@ -1,5 +1,5 @@
 experiment:
-    id: TARL
+    id: TARL_4gpu_ddp_25%
     offline: False
 
 ##Data
@@ -20,7 +20,7 @@ train:
     num_points: 40000
     scan_window: 12
     pre_train: True
-    n_gpus: 2
+    n_gpus: 4
     num_workers: 8
     max_epoch: 200
     lr: 0.0002
