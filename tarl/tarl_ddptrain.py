@@ -45,13 +45,20 @@ def main(config,weights,checkpoint):
 
     #Load data and model
     data = datasets.data_modules[cfg['data']['dataloader']](cfg)
+    trainer_type = cfg['experiment'].get('trainer', 'TARLTrainer')
     # model = models.StatNet(cfg)
     if weights is None:
-        model = models.TARLTrainer(cfg, data)
+        if trainer_type == 'TARLTrainer':
+            model = models.TARLTrainer(cfg, data)
+        elif trainer_type == 'OneWayTARL':
+            model = models.OneWayTARLTrainer(cfg, data)
     else:
         print('Loading: ', weights)
-        model = models.TARLTrainer.load_from_checkpoint(weights,hparams=cfg)
-        model.save_backbone()
+        if trainer_type == 'TARLTrainer':
+            model = models.TARLTrainer.load_from_checkpoint(weights,hparams=cfg)
+        elif trainer_type == 'OneWayTARL':
+            model = models.OneWayTARLTrainer.load_from_checkpoint(weights,hparams=cfg)
+        model.save_backbone(cfg['experiment']['id'])
         print('Backbone saved')
         exit()
 
@@ -72,6 +79,8 @@ def main(config,weights,checkpoint):
                                     name=cfg['experiment']['id'],
                                     project='dino3d',
                                     offline=cfg['experiment']['offline'],
+                                    # id='wp0x3247',
+                                    # resume='must'
                                     )
     
     log_every_steps = np.int32(100 * cfg['data']['percentage'])

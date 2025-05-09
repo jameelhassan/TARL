@@ -1,4 +1,54 @@
 import numpy as np
+from typing import List
+
+def drop_percent_per_segment(points: np.ndarray,
+                                drop_ratio: List[float] = [0.4, 0.75],
+                                seed: int = None):
+    """
+    Drop a random drop_ratio fraction of points within each segment, for each batch item.
+
+    Args:
+      points     (B,N,5) array: (x, y, z, feat, label).
+      drop_ratio List[float]: uniform sample between bounds.
+      seed       Optional RNG seed for reproducibility.
+
+    Returns:
+      output_list: list of length B, each item (M_i,5) array.
+    """
+    rng = np.random.default_rng(seed)
+    B, N, _ = points.shape
+    output_list = []
+
+    for b in range(B):
+        ps = points[b, :, :4]  # (N,4)
+        ss = points[b, :, 4]   # (N,)
+
+        this_drop_ratio = rng.uniform(drop_ratio[0], drop_ratio[1])
+        if not (0 <= this_drop_ratio < 1):
+            raise ValueError("drop_ratio must be in [0, 1).")
+
+        labels = ss
+        unique_labels = np.unique(labels)
+
+        keep_masks = []
+        for lbl in unique_labels:
+            idx = np.where(labels == lbl)[0]
+            n_to_drop = int(np.floor(len(idx) * this_drop_ratio))
+            if n_to_drop > 0:
+                drop_idx = rng.choice(idx, size=n_to_drop, replace=False)
+                mask = np.ones(len(idx), dtype=bool)
+                mask[np.isin(idx, drop_idx)] = False
+                keep_masks.append(idx[mask])
+            else:
+                keep_masks.append(idx)
+
+        kept_indices = np.concatenate(keep_masks)
+        ps_out = ps[kept_indices, :]
+        ss_out = ss[kept_indices].reshape(-1, 1)
+        output = np.concatenate((ps_out, ss_out), axis=-1)  # (M,5)
+        output_list.append(output)
+
+    return np.array(output_list)
 
 def rotate_point_cloud(batch_data):
     rotated_data = np.zeros(batch_data.shape, dtype=np.float32)
