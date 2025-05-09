@@ -94,7 +94,7 @@ def main(config,weights,checkpoint):
         devices=cfg['train']['n_gpus'],  # e.g., 2 for two GPUs
         strategy=DDPPlugin(find_unused_parameters=False),  # or True if needed
         replace_sampler_ddp=False,
-        # sync_batchnorm=True,    # We have batch norm in the model
+        sync_batchnorm=True,    # We have batch norm in the model
         logger=logger,
         log_every_n_steps=log_every_steps,
         max_epochs=cfg['train']['max_epoch'],
