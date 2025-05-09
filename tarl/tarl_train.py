@@ -8,6 +8,8 @@ import yaml
 
 import tarl.datasets.datasets as datasets
 import tarl.models.models as models
+import os
+from pathlib import Path
 
 @click.command()
 ### Add your options here
@@ -33,13 +35,24 @@ def main(config,weights,checkpoint):
 
     #Load data and model
     data = datasets.data_modules[cfg['data']['dataloader']](cfg)
+    trainer_type = cfg['experiment'].get('trainer', 'TARLTrainer')
     # model = models.StatNet(cfg)
     if weights is None:
-        model = models.TARLTrainer(cfg, data)
+        if trainer_type == 'TARLTrainer':
+            model = models.TARLTrainer(cfg, data)
+        elif trainer_type == 'OneWayTARL':
+            model = models.OneWayTARLTrainer(cfg, data)
     else:
         print('Loading: ', weights)
-        model = models.TARLTrainer.load_from_checkpoint(weights,hparams=cfg)
-        model.save_backbone()
+        ckpt = torch.load(weights)
+        trainer_type = ckpt['hyper_parameters']['experiment']['trainer']
+        if trainer_type == 'TARLTrainer':
+            model = models.TARLTrainer.load_from_checkpoint(weights,hparams=cfg)
+        elif trainer_type == 'OneWayTARL':
+            model = models.OneWayTARLTrainer.load_from_checkpoint(weights,hparams=cfg)
+        model_save_path = os.path.splitext(Path(weights).name)[0]
+        model.save_backbone(model_save_path)
+        exit()
 
     #Add callbacks
     lr_monitor = LearningRateMonitor(logging_interval='step')

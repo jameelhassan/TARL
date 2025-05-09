@@ -59,8 +59,8 @@ def main(config,weights,checkpoint):
             model = models.TARLTrainer.load_from_checkpoint(weights,hparams=cfg)
         elif trainer_type == 'OneWayTARL':
             model = models.OneWayTARLTrainer.load_from_checkpoint(weights,hparams=cfg)
-        model.save_backbone(cfg['experiment']['id'])
-        print('Backbone saved')
+        model_save_path = os.path.splitext(Path(weights).name)[0]
+        model.save_backbone(model_save_path)
         exit()
 
     #Add callbacks

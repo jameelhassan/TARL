@@ -49,14 +49,22 @@ class TARLTrainer(LightningModule):
         for param_q, param_k in zip(self.proj_head_q.parameters(), self.proj_head_k.parameters()):
             param_k.data = param_k.data * self.hparams['train']['momentum'] + param_q.data * (1. - self.hparams['train']['momentum'])
 
-    def save_backbone(self):
+    def save_backbone(self, name='tarl'):
         state = {
             'model': self.model_q.state_dict(),
             'epoch': self.current_epoch,
             'params': self.hparams,
         }
 
-        torch.save(state, 'lastepoch199_model_tarl.pt')
+        torch.save(state, f'checkpoints/{name}_q.pt')
+
+        state = {
+            'model': self.model_k.state_dict(),
+            'epoch': self.current_epoch,
+            'params': self.hparams,
+        }
+
+        torch.save(state, f'checkpoints/{name}_k.pt')
 
 
     def forward(self, x_t:ME.SparseTensor, s_t, x_tn:ME.SparseTensor, s_tn):
