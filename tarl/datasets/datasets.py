@@ -39,7 +39,9 @@ class DINOKittiDDPDataModule(LightningDataModule):
             intensity_channel=self.cfg['data']['intensity'],
             use_ground_pred=self.cfg['data']['use_ground_pred'],
             num_points=self.cfg['train']['num_points'],
-            augmented_dir=augmented_dir
+            augmented_dir=augmented_dir,
+            teacher_drop_rate=self.cfg['data']['teacher_drop_rate'],
+            student_drop_rate=self.cfg['data']['student_drop_rate']
             )
     
         self.train_sampler = DistributedSampler(data_set)

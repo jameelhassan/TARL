@@ -1,3 +1,4 @@
+# CUDA_VISIBLE_DEVICES=0,1 torchrun --nproc_per_node=2 --master_port=29100 -m tarl.tarl_ddptrain --config tarl/config/dino_ddp.yaml
 import click
 from os.path import join, dirname, abspath
 import subprocess

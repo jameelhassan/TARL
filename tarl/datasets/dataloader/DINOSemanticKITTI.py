@@ -34,6 +34,7 @@ class DINOKITTISet(Dataset):
         self.percentage = percentage
         self.teacher_drop_rate = teacher_drop_rate
         self.student_drop_rate = student_drop_rate
+        print(f"Using student drop {self.student_drop_rate} and Teacher drop {self.teacher_drop_rate}")
 
         self.split = split
         self.seqs = seqs
@@ -127,7 +128,7 @@ class DINOKITTISet(Dataset):
             opt_segments = np.fromfile(os.path.join(opt_cluster_path, fname + '.seg'), dtype=np.float16)
             opt_segments = opt_segments.reshape((-1, 1))
         else:
-            print("PCD not found, check this. Exiting now!!!")
+            print(f"PCD not found {os.path.join(opt_pcd_path, fname + '.seg')}, check this. Exiting now!!!")
             exit()
             points_set, ground_label, parse_idx = aggregate_pcds(self.points_datapath[index], self.data_dir, self.use_ground_pred)
             segments = clusterize_pcd(points_set, ground_label)
@@ -149,14 +150,14 @@ class DINOKITTISet(Dataset):
         p1 = p1.reshape((-1, 4))
         s1 = segments[pcd_parse_idx[t_frames[0]]+1:pcd_parse_idx[t_frames[0]+1]]
         ps1 = np.concatenate((p1, s1), axis=-1)
-        ps1 = self.student_transforms(ps1) #self.transforms(ps1) #
+        ps1 = self.student_transforms(ps1, drop_rate=self.student_drop_rate) #self.transforms(ps1) #
         p1 = ps1[:,:-1]
         s1 = ps1[:,-1][:,np.newaxis]
 
         p2 = opt_pcd #p2.reshape((-1, 4))
         s2 = opt_segments #s2.reshape((-1, 1))
         ps2 = np.concatenate((p2, s2), axis=-1)
-        ps2 = self.teacher_transforms(ps2) #self.transforms(ps2) #
+        ps2 = self.teacher_transforms(ps2, drop_rate=self.teacher_drop_rate) #self.transforms(ps2) #
         p2 = ps2[:,:-1]
         s2 = ps2[:,-1][:,np.newaxis]
 

@@ -14,6 +14,9 @@ data:
     intensity: True
     percentage: 0.25
     use_ground_pred: True
+    augmented_dir: 'NewOptPCD_T12'
+    teacher_drop_rate: [0.0, 0.25]
+    student_drop_rate: [0.5, 0.9]
 
 ##Training
 train:
@@ -29,7 +32,7 @@ train:
     sample_points: 300
     tau: 0.1
     momentum: 0.999
-    batch_size: 8
+    batch_size: 16
     visualize_attn: False
 
 ##Network
