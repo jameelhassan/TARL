@@ -17,6 +17,26 @@
                 "--config",
                 "tarl/config/debug.yaml"
             ]
+        },
+
+        {
+            "name": "TARL DDP",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "torch.distributed.run",
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                // "NCCL_P2P_DISABLE": "1"
+            },
+            "args": [
+                "--nproc_per_node=2",
+                "--master_port", "20000",
+                "-m", "tarl.tarl_ddptrain",
+                "--config",
+                "tarl/config/config_ddp.yaml"
+            ],
+            "justMyCode": true
         }
     ]
 }

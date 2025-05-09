@@ -11,6 +11,16 @@ import tarl.models.models as models
 import os
 from pathlib import Path
 
+# set seeds
+import random
+import numpy as np
+import torch
+SEED = 101
+random.seed(SEED)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
+
 @click.command()
 ### Add your options here
 @click.option('--config',
