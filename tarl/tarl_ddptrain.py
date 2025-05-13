@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 import tarl.datasets.datasets as datasets
-import tarl.models.models_ddp as models
+import tarl.models.models as models
 from pytorch_lightning.plugins import DDPPlugin
 
 # set seeds
@@ -54,6 +54,8 @@ def main(config,weights,checkpoint):
             model = models.TARLTrainer(cfg, data)
         elif trainer_type == 'OneWayTARL':
             model = models.OneWayTARLTrainer(cfg, data)
+        elif trainer_type == 'TARLPostPool':
+            model = models.TARLPostPoolTrainer(cfg, data)
     else:
         print('Loading: ', weights)
         ckpt = torch.load(weights)
@@ -62,6 +64,8 @@ def main(config,weights,checkpoint):
             model = models.TARLTrainer.load_from_checkpoint(weights,hparams=cfg)
         elif trainer_type == 'OneWayTARL':
             model = models.OneWayTARLTrainer.load_from_checkpoint(weights,hparams=cfg)
+        elif trainer_type == 'TARLPostPool':
+            model = models.TARLPostPoolTrainer.load_from_checkpoint(weights,hparams=cfg)
         model_save_path = os.path.splitext(Path(weights).name)[0]
         model.save_backbone(model_save_path)
         exit()

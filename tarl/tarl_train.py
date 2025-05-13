@@ -5,6 +5,7 @@ from pytorch_lightning import Trainer
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 import yaml
+import torch
 
 import tarl.datasets.datasets as datasets
 import tarl.models.models as models
@@ -42,14 +43,18 @@ def main(config,weights,checkpoint):
             model = models.TARLTrainer(cfg, data)
         elif trainer_type == 'OneWayTARL':
             model = models.OneWayTARLTrainer(cfg, data)
+        elif trainer_type == 'TARLPostPool':
+            model = models.TARLPostPoolTrainer(cfg, data)
     else:
         print('Loading: ', weights)
         ckpt = torch.load(weights)
-        trainer_type = ckpt['hyper_parameters']['experiment']['trainer']
+        trainer_type = ckpt['hyper_parameters']['experiment'].get('trainer', 'TARLTrainer')
         if trainer_type == 'TARLTrainer':
             model = models.TARLTrainer.load_from_checkpoint(weights,hparams=cfg)
         elif trainer_type == 'OneWayTARL':
             model = models.OneWayTARLTrainer.load_from_checkpoint(weights,hparams=cfg)
+        elif trainer_type == 'TARLPostPool':
+            model = models.TARLPostPoolTrainer.load_from_checkpoint(weights,hparams=cfg)
         model_save_path = os.path.splitext(Path(weights).name)[0]
         model.save_backbone(model_save_path)
         exit()
