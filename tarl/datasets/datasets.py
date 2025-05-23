@@ -72,6 +72,7 @@ class DINOKittiDataModule(LightningDataModule):
     def train_dataloader(self):
         collate = SparseAugmentedCollation(self.cfg['train']['resolution'])
 
+        augmented_dir = self.cfg['data'].get('augmented_dir', 'NewOptPCD_T12')
         data_set = DINOKITTISet(
             data_dir=self.cfg['data']['data_dir'],
             seqs=self.cfg['data']['train'],
@@ -81,7 +82,12 @@ class DINOKittiDataModule(LightningDataModule):
             percentage=self.cfg['data']['percentage'],
             intensity_channel=self.cfg['data']['intensity'],
             use_ground_pred=self.cfg['data']['use_ground_pred'],
-            num_points=self.cfg['train']['num_points'])
+            num_points=self.cfg['train']['num_points'],
+            augmented_dir=augmented_dir,
+            teacher_drop_rate=self.cfg['data']['teacher_drop_rate'],
+            student_drop_rate=self.cfg['data']['student_drop_rate']
+            )
+        
         loader = DataLoader(data_set, batch_size=self.cfg['train']['batch_size'], shuffle=True,
                             num_workers=self.cfg['train']['num_workers'], collate_fn=collate)
         return loader
