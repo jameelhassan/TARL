@@ -163,6 +163,7 @@ class TARLTrainer(LightningModule):
 class TARLPostPoolTrainer(LightningModule):
     def __init__(self, cfg: dict, data_module: LightningDataModule = None):
         super().__init__()
+        print("########### Loading post pool TARL ##############")
         # name you hyperparameter hparams, then it will be saved automagically.
         self.save_hyperparameters(cfg)
         self.data_module = data_module
@@ -224,6 +225,7 @@ class TARLPostPoolTrainer(LightningModule):
 
         # projection head over the point-wise features for each segment
         z_t = self.proj_head_q(h_tf)
+        # print(f"rank {self.model_q.stage1[0].net[1].bn.running_mean.device}, {self.model_q.stage1[0].net[1].bn.running_mean.mean().item()}")    
         # predictor over the projected fetures
         z_t_tn = self.predictor(z_t)
         z_t_tn = nn.functional.normalize(z_t_tn, dim=-1)

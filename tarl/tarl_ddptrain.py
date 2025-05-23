@@ -12,6 +12,7 @@ from pathlib import Path
 import tarl.datasets.datasets as datasets
 import tarl.models.models as models
 from pytorch_lightning.plugins import DDPPlugin
+import datetime
 
 # set seeds
 import random
@@ -82,6 +83,10 @@ def main(config,weights,checkpoint):
     #                                          default_hp_metric=False)
 
     os.makedirs('experiments/'+cfg['experiment']['id'], exist_ok=True)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"experiments/{cfg['experiment']['id']}/config_{timestamp}.yaml"
+    with open(filename, 'w') as f:
+        yaml.dump(cfg, f)
     logger = pl_loggers.WandbLogger(save_dir='experiments/'+cfg['experiment']['id'],
                                     entity='viu3d',
                                     name=cfg['experiment']['id'],

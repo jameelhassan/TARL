@@ -44,7 +44,7 @@ class DINOKittiDDPDataModule(LightningDataModule):
             student_drop_rate=self.cfg['data']['student_drop_rate']
             )
     
-        self.train_sampler = DistributedSampler(data_set)
+        self.train_sampler = DistributedSampler(data_set, shuffle=True)
         batch_size_per_gpu = self.cfg['train'].get('batch_size') // self.cfg['train'].get('n_gpus')
         loader = DataLoader(
             data_set, 
@@ -116,7 +116,7 @@ class TemporalKittiDDPDataModule(LightningDataModule):
             augmented_dir=augmented_dir
             )
     
-        self.train_sampler = DistributedSampler(data_set)
+        self.train_sampler = DistributedSampler(data_set, shuffle=True)
         batch_size_per_gpu = self.cfg['train'].get('batch_size') // self.cfg['train'].get('n_gpus')
         loader = DataLoader(
             data_set, 

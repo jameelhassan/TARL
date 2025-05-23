@@ -1,5 +1,5 @@
 experiment:
-    id: TARL_optPCD_bs16
+    id: TARL_optPCD_bs16_1gpu
     offline: False
     trainer: 'TARLTrainer'
 
@@ -24,9 +24,9 @@ train:
     num_points: 40000
     scan_window: 12
     pre_train: True
-    n_gpus: 2
+    n_gpus: 1
     num_workers: 8
-    max_epoch: 200
+    max_epoch: 400
     lr: 0.0002
     decay_lr: 1.0e-4
     sample_points: 300
