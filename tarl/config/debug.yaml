@@ -1,12 +1,13 @@
 experiment:
-    id: TARL_ddp25%
-    offline: False
+    id: Debug
+    offline: True
+    trainer: 'TARLPostPool'
 
 ##Data
 data:
     data_dir: './Datasets/SemanticKITTI'
     split: 'train'
-    dataloader: 'TemporalSemKITTIDDP'
+    dataloader: 'TemporalSemKITTI'
     train: [ '00', '01', '02', '03', '04', '05', '06', '07', '09', '10' ]
     validation: [ '08' ]
     test: ['11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21']
@@ -20,15 +21,15 @@ train:
     num_points: 40000
     scan_window: 12
     pre_train: True
-    n_gpus: 4
-    num_workers: 8
+    n_gpus: 1
+    num_workers: 8 
     max_epoch: 200
     lr: 0.0002
     decay_lr: 1.0e-4
     sample_points: 300
     tau: 0.1
     momentum: 0.999
-    batch_size: 8
+    batch_size: 2
     visualize_attn: False
 
 ##Network

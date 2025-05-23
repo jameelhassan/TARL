@@ -10,8 +10,9 @@ import os
 from pathlib import Path
 
 import tarl.datasets.datasets as datasets
-import tarl.models.models_ddp as models
+import tarl.models.models as models
 from pytorch_lightning.plugins import DDPPlugin
+import datetime
 
 # set seeds
 import random
@@ -54,6 +55,8 @@ def main(config,weights,checkpoint):
             model = models.TARLTrainer(cfg, data)
         elif trainer_type == 'OneWayTARL':
             model = models.OneWayTARLTrainer(cfg, data)
+        elif trainer_type == 'TARLPostPool':
+            model = models.TARLPostPoolTrainer(cfg, data)
     else:
         print('Loading: ', weights)
         ckpt = torch.load(weights)
@@ -62,6 +65,8 @@ def main(config,weights,checkpoint):
             model = models.TARLTrainer.load_from_checkpoint(weights,hparams=cfg)
         elif trainer_type == 'OneWayTARL':
             model = models.OneWayTARLTrainer.load_from_checkpoint(weights,hparams=cfg)
+        elif trainer_type == 'TARLPostPool':
+            model = models.TARLPostPoolTrainer.load_from_checkpoint(weights,hparams=cfg)
         model_save_path = os.path.splitext(Path(weights).name)[0]
         model.save_backbone(model_save_path)
         exit()
@@ -78,6 +83,10 @@ def main(config,weights,checkpoint):
     #                                          default_hp_metric=False)
 
     os.makedirs('experiments/'+cfg['experiment']['id'], exist_ok=True)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"experiments/{cfg['experiment']['id']}/config_{timestamp}.yaml"
+    with open(filename, 'w') as f:
+        yaml.dump(cfg, f)
     logger = pl_loggers.WandbLogger(save_dir='experiments/'+cfg['experiment']['id'],
                                     entity='viu3d',
                                     name=cfg['experiment']['id'],
