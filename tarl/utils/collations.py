@@ -84,10 +84,13 @@ def list_segments_points_slow(p_coord, p_feats, labels, sample_points, avg_feats
     return (seg_coord, seg_feats)
 
 
-def numpy_to_sparse_tensor(p_coord, p_feats, p_label=None):
+def numpy_to_sparse_tensor(p_coord, p_feats, p_label=None, use_intensity=True):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     p_coord = ME.utils.batched_coordinates(p_coord, dtype=torch.float32)
     p_feats = torch.vstack(p_feats).float()
+
+    if not use_intensity and p_feats.shape[1] == 4:
+        p_feats = p_feats[:, :3]  # Keep only XYZ coordinates
 
     if p_label is not None:
         # we batch the segs id to later have unique labels per point
