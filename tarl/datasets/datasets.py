@@ -10,7 +10,7 @@ from torch.utils.data.distributed import DistributedSampler
 
 warnings.filterwarnings('ignore')
 
-__all__ = ['DINOSemKITTIDDP', 'DINOSemKITTI', 'TemporalSemKITTIDDP', 'TemporalKittiDataModule', 'KittiDataModule', 'TemplateDataModule']
+__all__ = ['DINOKittiDDPDataModule', 'DINOKittiDataModule', 'TemporalKittiDDPDataModule', 'TemporalKittiDataModule', 'KittiDataModule', 'TemplateDataModule']
 
 class DINOKittiDDPDataModule(LightningDataModule):
     def __init__(self, cfg):

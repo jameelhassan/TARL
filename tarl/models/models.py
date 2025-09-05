@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import tarl.models.minkunet as minknet
+from tarl.models.minkunet import mink_unet
 from tarl.models.blocks import TransformerProjector, TemperatureCosineSim, PositionalEncoder
 from tarl.utils.pcd_preprocess import visualize_pcd_clusters
 from tarl.utils.collations import numpy_to_sparse_tensor, list_segments_points, pad_batch
@@ -21,9 +22,12 @@ class TARLTrainer(LightningModule):
         self.save_hyperparameters(cfg)
         self.data_module = data_module
 
-        self.model_q = minknet.MinkUNet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'])
+        print("######### Original TARL ###########")
+        # self.model_q = minknet.MinkUNet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'])
+        self.model_q = mink_unet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'], D=3, arch='MinkUNet18A')
         self.proj_head_q = TransformerProjector(d_model=self.hparams['model']['out_dim'], num_layer=1)
-        self.model_k = minknet.MinkUNet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'])
+        # self.model_k = minknet.MinkUNet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'])
+        self.model_k = mink_unet(in_channels=4 if self.hparams['data']['intensity'] else 3, out_channels=self.hparams['model']['out_dim'], D=3, arch='MinkUNet18A')
         self.proj_head_k = TransformerProjector(d_model=self.hparams['model']['out_dim'], num_layer=1)
 
         # initialize model k and q
