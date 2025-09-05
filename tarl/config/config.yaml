@@ -1,5 +1,5 @@
 experiment:
-    id: TARL-openscene
+    id: TARL25%-openscene-BS5
     offline: False
 
 ##Data
@@ -28,7 +28,7 @@ train:
     sample_points: 300
     tau: 0.1
     momentum: 0.999
-    batch_size: 4
+    batch_size: 5
     visualize_attn: False
 
 ##Network
