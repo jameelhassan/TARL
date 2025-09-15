@@ -18,7 +18,7 @@ class BasicConvolutionBlock(nn.Module):
                                  dilation=dilation,
                                  stride=stride,
                                  dimension=D),
-            ME.MinkowskiBatchNorm(outc),
+            ME.MinkowskiInstanceNorm(outc),
             ME.MinkowskiReLU(inplace=True)
         )
 
@@ -36,7 +36,7 @@ class BasicDeconvolutionBlock(nn.Module):
                                  kernel_size=ks,
                                  stride=stride,
                                  dimension=D),
-            ME.MinkowskiBatchNorm(outc),
+            ME.MinkowskiInstanceNorm(outc),
             ME.MinkowskiReLU(inplace=True)
         )
 
@@ -54,7 +54,7 @@ class ResidualBlock(nn.Module):
                                  dilation=dilation,
                                  stride=stride,
                                  dimension=D),
-            ME.MinkowskiBatchNorm(outc),
+            ME.MinkowskiInstanceNorm(outc),
             ME.MinkowskiReLU(inplace=True),
             ME.MinkowskiConvolution(outc,
                                  outc,
@@ -62,13 +62,13 @@ class ResidualBlock(nn.Module):
                                  dilation=dilation,
                                  stride=1,
                                  dimension=D),
-            ME.MinkowskiBatchNorm(outc)
+            ME.MinkowskiInstanceNorm(outc)
         )
 
         self.downsample = nn.Sequential() if (inc == outc and stride == 1) else \
             nn.Sequential(
                 ME.MinkowskiConvolution(inc, outc, kernel_size=1, dilation=1, stride=stride, dimension=D),
-                ME.MinkowskiBatchNorm(outc)
+                ME.MinkowskiInstanceNorm(outc)
             )
 
         self.relu = ME.MinkowskiReLU(inplace=True)
@@ -90,10 +90,10 @@ class MinkUNet(nn.Module):
         self.D = kwargs.get('D', 3)
         self.stem = nn.Sequential(
             ME.MinkowskiConvolution(in_channels, cs[0], kernel_size=3, stride=1, dimension=self.D),
-            ME.MinkowskiBatchNorm(cs[0]),
+            ME.MinkowskiInstanceNorm(cs[0]),
             ME.MinkowskiReLU(True),
             ME.MinkowskiConvolution(cs[0], cs[0], kernel_size=3, stride=1, dimension=self.D),
-            ME.MinkowskiBatchNorm(cs[0]),
+            ME.MinkowskiInstanceNorm(cs[0]),
             ME.MinkowskiReLU(inplace=True)
         )
 
@@ -162,7 +162,7 @@ class MinkUNet(nn.Module):
 
     def weight_initialization(self):
         for m in self.modules():
-            if isinstance(m, nn.BatchNorm1d):
+            if isinstance(m, ME.MinkowskiInstanceNorm):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
 

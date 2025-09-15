@@ -99,9 +99,9 @@ def main(config,weights,checkpoint):
     log_every_steps = np.int32(100 * cfg['data']['percentage'])
     #Setup trainer
     trainer = Trainer(
-        accelerator="gpu",
-        devices=cfg['train']['n_gpus'],  # e.g., 2 for two GPUs
-        strategy=DDPPlugin(find_unused_parameters=False),  # or True if needed
+        gpus=cfg['train']['n_gpus'],
+        accelerator='ddp',
+        plugins=DDPPlugin(find_unused_parameters=False),
         replace_sampler_ddp=False,
         sync_batchnorm=True,    # We have batch norm in the model
         logger=logger,
